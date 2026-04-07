@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskAlvin - AI-Native Home Buying Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script crossorigin src="https://esm.sh/react@18"></script>
+    <script crossorigin src="https://esm.sh/react-dom@18"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://esm.sh/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #F5F7FA;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        /* Logo */
+        .logo {
+            padding: 0 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #2563EB;
+            margin-bottom: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Navigation */
+        .nav-item {
+            padding: 12px 24px;
+            margin: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 150ms ease-out;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .nav-item:hover {
+            background-color: #F9FAFB;
+            color: #111827;
+        }
+
+        .nav-item.active {
+            background-color: #EFF6FF;
+            color: #2563EB;
+            border-left-color: #2563EB;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        /* User profile at bottom */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .user-info {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .body-large {
+            font-size: 16px;
+            font-weight: 400;
+            color: #111827;
+        }
+
+        .body {
+            font-size: 14px;
+            font-weight: 400;
+            color: #111827;
+        }
+
+        .caption {
+            font-size: 12px;
+            font-weight: 400;
+            color: #6B7280;
+        }
+
+        .text-secondary {
+            color: #6B7280;
+        }
+
+        .text-disabled {
+            color: #9CA3AF;
+        }
+
+        /* Cards */
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .card.elevated {
+            box-shadow: 0px 4px 16px rgba(0,0,0,0.08);
+        }
+
+        /* Buttons */
+        .button {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 150ms ease-out;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .button-primary {
+            background-color: #22C55E;
+            color: white;
+        }
+
+        .button-primary:hover {
+            background-color: #16A34A;
+        }
+
+        .button-primary:active {
+            transform: scale(0.98);
+        }
+
+        .button-secondary {
+            background-color: transparent;
+            color: #2563EB;
+            border: 1px solid #2563EB;
+        }
+
+        .button-secondary:hover {
+            background-color: #EFF6FF;
+        }
+
+        .button-text {
+            background-color: transparent;
+            color: #2563EB;
+            padding: 8px 12px;
+        }
+
+        .button-text:hover {
+            background-color: #EFF6FF;
+        }
+
+        .button-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-height: auto;
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Input */
+        .input-field {
+            padding: 10px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            background: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #111827;
+            transition: all 150ms ease-out;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: #9CA3AF;
+        }
+
+        /* Stats Cards Row */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            padding: 24px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .table thead {
+            background-color: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #F9FAFB;
+            cursor: pointer;
+        }
+
+        /* Badge/Tag */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-onboarding {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-closing {
+            background-color: #E0E7FF;
+            color: #3730A3;
+        }
+
+        .badge-status-active {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .badge-status-touring {
+            background-color: #DBEAFE;
+            color: #0C4A6E;
+        }
+
+        .badge-status-offer {
+            background-color: #FCE7F3;
+            color: #831843;
+        }
+
+        .badge-purple {
+            background-color: #F0F0F7;
+            color: #6B59DE;
+        }
+
+        /* Deal Workspace */
+        .workspace-container {
+            display: flex;
+            gap: 16px;
+            height: calc(100vh - 140px);
+        }
+
+        .workspace-panel {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .workspace-panel-left {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .workspace-panel-center {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .workspace-panel-right {
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid #E5E7EB;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #6B7280;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Playbook Stages */
+        .stage-item {
+            margin-bottom: 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stage-header {
+            padding: 12px 16px;
+            background-color: #F9FAFB;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 150ms ease-out;
+        }
+
+        .stage-header:hover {
+            background-color: #F3F4F6;
+        }
+
+        .stage-header.active {
+            background-color: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .stage-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .stage-check.completed {
+            background-color: #22C55E;
+            color: white;
+        }
+
+        .stage-check.active {
+            background-color: #2563EB;
+            color: white;
+        }
+
+        .stage-check.pending {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+        }
+
+        .stage-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 150ms ease-out;
+        }
+
+        .stage-content.expanded {
+            max-height: 500px;
+        }
+
+        .task-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #D1D5DB;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 150ms ease-out;
+            flex-shrink: 0;
+        }
+
+        .task-checkbox:hover {
+            border-color: #2563EB;
+        }
+
+        .task-checkbox.checked {
+            background-color: #22C55E;
+            border-color: #22C55E;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            animation: slideUp 200ms ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.agent {
+            align-self: flex-end;
+            max-width: 80%;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.agent {
+            background-color: #3B82F6;
+        }
+
+        .message-avatar.ai {
+            background-color: #6B59DE;
+        }
+
+        .message-avatar.client {
+            background-color: #8B5CF6;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.agent .message-bubble {
+            background-color: #2563EB;
+            color: white;
+        }
+
+        .message.ai .message-bubble {
+            background-color: #F0F0F7;
+            color: #111827;
+            border: 1px solid #E5D4FF;
+            border-left: 3px solid #6B59DE;
+        }
+
+        .message.client .message-bubble {
+            background-color: #F3F4F6;
+            color: #111827;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            resize: none;
+            max-height: 100px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background-color: #F9FAFB;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            transition: all 150ms ease-out;
+        }
+
+        .icon-button:hover {
+            background-color: #EFF6FF;
+            color: #2563EB;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            padding: 16px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .profile-info-item {
+            margin-bottom: 12px;
+        }
+
+        .profile-label {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        /* Property Cards */
+        .property-card {
+            padding: 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 150ms ease-out;
+            margin-bottom: 12px;
+        }
+
+        .property-card:hover {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .property-address {
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .property-price {
+            font-weight: 700;
+            font-size: 14px;
+            color: #22C55E;
+            margin-bottom: 8px;
+        }
+
+        .property-details {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .property-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #EFF6FF;
+            color: #2563EB;
+            margin-right: 4px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563EB;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563EB;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Checkbox Group */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #22C55E;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #E5E7EB;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #22C55E;
+            transition: width 300ms ease-out;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 150ms ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0px 20px 40px rgba(0,0,0,0.15);
+            animation: slideUp 300ms ease-out;
+        }
+
+        /* Flex utilities */
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .gap-16 {
+            gap: 16px;
+        }
+
+        .gap-24 {
+            gap: 24px;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mt-16 {
+            margin-top: 16px;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .workspace-panel-left {
+                width: 240px;
+            }
+
+            .workspace-panel-right {
+                width: 280px;
+            }
+
+            .content-area {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 60px;
+                flex-direction: row;
+                padding: 0 16px;
+                border-right: none;
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            .logo {
+                padding: 0;
+                margin: 0;
+                flex-shrink: 0;
+            }
+
+            .nav-item {
+                padding: 0 12px;
+                margin: 0;
+                min-width: 100px;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            .workspace-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .workspace-panel-left,
+            .workspace-panel-right {
+                width: 100%;
+                height: 300px;
+            }
+
+            .content-area {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .message {
+                max-width: 100%;
+            }
+
+            .message.agent {
+                max-width: 100%;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Lucide Icon Components
+        const IconHome = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+        const IconUsers = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const IconKey = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-5.9 13.9a6 6 0 1 1-8.485-8.485 6 6 0 0 1 8.485 8.485z"/></svg>;
+        const IconCog = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"/></svg>;
+        const IconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
+        const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+        const IconChevronRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>;
+        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>;
+        const IconMapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+        const IconPaperclip = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 0 19.8.8M22 4.5a10 10 0 0 0-19.8.8"/></svg>;
+        const IconSend = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
+        const IconStar = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+        const IconCalendar = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+        const IconHome2 = () => <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" color="#D1D5DB"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+        const IconMenu = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>;
+        const IconX = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+        const IconArrowLeft = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
+
+        // Mock Data
+        const mockClients = [
+            { id: 1, name: "Marcus & Elena Rivera", status: "active", properties: 3, lastActive: "2 hours ago", email: "marcus@example.com", phone: "(415) 555-0142", budget: "$1.2M - $1.5M", locations: ["Pacific Heights", "Marina"], beds: 3, baths: 2, preApproval: "Approved", timeline: "30 days" },
+            { id: 2, name: "Sarah & David Chen", status: "onboarding", properties: 1, lastActive: "1 day ago", email: "sarah@example.com", phone: "(415) 555-0156", budget: "$800K - $1M", locations: ["Mission", "SOMA"], beds: 2, baths: 1, preApproval: "In Progress", timeline: "45 days" },
+            { id: 3, name: "Jessica Martinez", status: "active", properties: 2, lastActive: "4 hours ago", email: "jessica@example.com", phone: "(415) 555-0198", budget: "$600K - $800K", locations: ["Sunset District"], beds: 2, baths: 2, preApproval: "Approved", timeline: "60 days" },
+            { id: 4, name: "Michael Thompson", status: "closing", properties: 4, lastActive: "30 mins ago", email: "michael@example.com", phone: "(415) 555-0134", budget: "$2M+", locations: ["Pacific Heights", "Presidio Heights"], beds: 4, baths: 3, preApproval: "Approved", timeline: "14 days" },
+            { id: 5, name: "Emily Wong", status: "active", properties: 2, lastActive: "3 hours ago", email: "emily@example.com", phone: "(415) 555-0167", budget: "$900K - $1.1M", locations: ["Hayes Valley"], beds: 3, baths: 2, preApproval: "Approved", timeline: "45 days" },
+            { id: 6, name: "James & Lisa Anderson", status: "onboarding", properties: 0, lastActive: "5 hours ago", email: "james@example.com", phone: "(415) 555-0189", budget: "$1M - $1.3M", locations: ["Western Addition"], beds: 3, baths: 2.5, preApproval: "Pending", timeline: "60 days" },
+        ];
+
+        const mockProperties = [
+            { id: 1, address: "2847 California Street, Pacific Heights, SF", price: "$1.25M", beds: 3, baths: 2, sqft: "2,150", status: "touring", image: "", mls: "12345678" },
+            { id: 2, address: "1847 Fillmore Street, Marina, SF", price: "$1.45M", beds: 3, baths: 2.5, sqft: "2,400", status: "active", image: "", mls: "12345679" },
+            { id: 3, address: "456 Cole Street, Upper Cole Valley, SF", price: "$1.15M", beds: 3, baths: 2, sqft: "1,950", status: "active", image: "", mls: "12345680" },
+            { id: 4, address: "1234 Oak Street, Alamo Square, SF", price: "$1.35M", beds: 3, baths: 2, sqft: "2,200", status: "offer", image: "", mls: "12345681" },
+            { id: 5, address: "789 Portola Drive, Twin Peaks, SF", price: "$1.55M", beds: 4, baths: 3, sqft: "2,800", status: "touring", image: "", mls: "12345682" },
+        ];
+
+        const mockChatMessages = [
+            { id: 1, sender: "client", name: "Marcus", text: "We're very interested in the property on California Street. Can we schedule a showing?", time: "10:32 AM" },
+            { id: 2, sender: "agent", name: "Sarah Kim", text: "Of course! I have availability tomorrow at 2 PM or 4 PM. Which works better for you both?", time: "10:35 AM" },
+            { id: 3, sender: "ai", name: "AI Assistant", text: "I've reviewed the listing details. This property was built in 1952 and has had recent updates. The HOA is $580/month. Based on your criteria, this ranks highly for location and school district proximity.", time: "10:36 AM" },
+            { id: 4, sender: "client", name: "Marcus", text: "Good to know about the HOA. Let's do 2 PM tomorrow.", time: "10:38 AM" },
+            { id: 5, sender: "agent", name: "Sarah Kim", text: "Perfect! I've confirmed the showing for tomorrow at 2 PM. I'll meet you at the property entrance at 1:55 PM. Please bring your pre-approval letter.", time: "10:40 AM" },
+        ];
+
+        const mockTasks = [
+            { id: 1, stage: 0, text: "Schedule initial consultation", completed: true },
+            { id: 2, stage: 0, text: "Collect financial documents", completed: true },
+            { id: 3, stage: 0, text: "Discuss investment goals", completed: false },
+            { id: 4, stage: 1, text: "Review buyer agreement", completed: true },
+            { id: 5, stage: 1, text: "Explain terms and conditions", completed: true },
+            { id: 6, stage: 1, text: "Obtain signatures", completed: false },
+            { id: 7, stage: 2, text: "Provide search criteria form", completed: true },
+            { id: 8, stage: 2, text: "Generate property matches", completed: true },
+            { id: 9, stage: 2, text: "Schedule property tours", completed: false },
+            { id: 10, stage: 3, text: "Arrange showings", completed: true },
+            { id: 11, stage: 3, text: "Provide disclosure summaries", completed: false },
+            { id: 12, stage: 4, text: "Analyze comparable sales", completed: false },
+            { id: 13, stage: 4, text: "Prepare offer strategy", completed: false },
+            { id: 14, stage: 4, text: "Submit offer", completed: false },
+            { id: 5, stage: 5, text: "Order home inspection", completed: false },
+            { id: 16, stage: 5, text: "Coordinate appraisal", completed: false },
+            { id: 17, stage: 5, text: "Finalize mortgage", completed: false },
+            { id: 18, stage: 5, text: "Schedule closing", completed: false },
+        ];
+
+        const playBookStages = [
+            { id: 0, name: "Onboarding", description: "Client intake and goal setting" },
+            { id: 1, name: "Agreement", description: "Review and sign buyer agreement" },
+            { id: 2, name: "Home Search", description: "Property search and analysis" },
+            { id: 3, name: "Touring", description: "Schedule and conduct showings" },
+            { id: 4, name: "Offer", description: "Prepare and submit offer" },
+            { id: 5, name: "Closing", description: "Final steps and closing" },
+        ];
+
+        // Main App Component
+        function App() {
+            const [currentView, setCurrentView] = useState("dashboard");
+            const [selectedClient, setSelectedClient] = useState(null);
+            const [selectedProperty, setSelectedProperty] = useState(null);
+            const [showClientForm, setShowClientForm] = useState(false);
+            const [expandedStages, setExpandedStages] = useState({});
+            const [completedTasks, setCompletedTasks] = useState(new Set());
+            const [messages, setMessages] = useState(mockChatMessages);
+            const [messageInput, setMessageInput] = useState("");
+            const [currentClient, setCurrentClient] = useState(mockClients[0]);
+            const [searchTerm, setSearchTerm] = useState("");
+
+            const toggleStage = (stageId) => {
+                setExpandedStages(prev => ({
+                    ...prev,
+                    [stageId]: !prev[stageId]
+                }));
+            };
+
+            const toggleTask = (taskId) => {
+                setCompletedTasks(prev => {
+                    const newSet = new Set(prev);
+                    if (newSet.has(taskId)) {
+                        newSet.delete(taskId);
+                    } else {
+                        newSet.add(taskId);
+                    }
+                    return newSet;
+                });
+            };
+
+            const sendMessage = () => {
+                if (messageInput.trim()) {
+                    const newMessage = {
+                        id: messages.length + 1,
+                        sender: "agent",
+                        name: "Sarah Kim",
+                        text: messageInput,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    setMessages([...messages, newMessage]);
+                    setMessageInput("");
+                }
+            };
+
+            const handleClientClick = (client) => {
+                setCurrentClient(client);
+                setSelectedClient(client.id);
+                setCurrentView("workspace");
+            };
+
+            const handlePropertyClick = (property) => {
+                setSelectedProperty(property);
+                setCurrentView("property");
+            };
+
+            const filteredClients = mockClients.filter(c =>
+                c.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+                <div className="app-container">
+                    <Sidebar
+                        currentView={currentView}
+                        setCurrentView={setCurrentView}
+                        onAddClient={() => {
+                            setShowClientForm(true);
+                            setCurrentView("dashboard");
+                        }}
+                    />
+
+                    <div className="main-content">
+                        {currentView === "dashboard" && (
+                            <DashboardView currentClient={currentClient} onClientSelect={handleClientClick} />
+                        )}
+
+                        {currentView === "clients" && (
+                            <ClientsView
+                                clients={filteredClients}
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                onAddClient={() => setShowClientForm(true)}
+                                onClientSelect={handleClientClick}
+                            />
+                        )}
+
+                        {currentView === "workspace" && selectedClient && (
+                            <DealWorkspaceView
+                                client={currentClient}
+                                properties={mockProperties}
+                                messages={messages}
+                                messageInput={messageInput}
+                                setMessageInput={setMessageInput}
+                                onSendMessage={sendMessage}
+                                expandedStages={expandedStages}
+                                toggleStage={toggleStage}
+                                completedTasks={completedTasks}
+                                toggleTask={toggleTask}
+                                onPropertyClick={handlePropertyClick}
+                                onBack={() => {
+                                    setSelectedClient(null);
+                                    setCurrentView("clients");
+                                }}
+                            />
+                        )}
+
+                        {currentView === "properties" && (
+                            <PropertiesView
+                                properties={mockProperties}
+                                onPropertySelect={handlePropertyClick}
+                            />
+                        )}
+
+                        {currentView === "playbooks" && (
+                            <PlaybooksView
+                                stages={playBookStages}
+                                tasks={mockTasks}
+                                expandedStages={expandedStages}
+                                toggleStage={toggleStage}
+                                completedTasks={completedTasks}
+                                toggleTask={toggleTask}
+                            />
+                        )}
+
+                        {currentView === "settings" && (
+                            <SettingsView />
+                        )}
+
+                        {currentView === "property" && selectedProperty && (
+                            <PropertyDetailView
+                                property={selectedProperty}
+                                messages={messages}
+                                messageInput={messageInput}
+                                setMessageInput={setMessageInput}
+                                onSendMessage={sendMessage}
+                                onBack={() => setCurrentView("workspace")}
+                            />
+                        )}
+                    </div>
+
+                    {showClientForm && (
+                        <ClientIntakeForm onClose={() => setShowClientForm(false)} />
+                    )}
+                </div>
+            );
+        }
+
+        function Sidebar({ currentView, setCurrentView, onAddClient }) {
+            return (
+                <div className="sidebar">
+                    <div className="logo">
+                        <div className="logo-icon">A</div>
+                        <span>AskAlvin</span>
+                    </div>
+
+                    <nav style={{ flex: 1 }}>
+                        <div
+                            className={`nav-item ${currentView === "dashboard" ? "active" : ""}`}
+                            onClick={() => setCurrentView("dashboard")}
+                        >
+                            <IconHome />
+                            <span>Dashboard</span>
+                        </div>
+                        <div
+                            className={`nav-item ${currentView === "clients" ? "active" : ""}`}
+                            onClick={() => setCurrentView("clients")}
+                        >
+                            <IconUsers />
+                            <span>Clients</span>
+                        </div>
+                        <div
+                            className={`nav-item ${currentView === "properties" ? "active" : ""}`}
+                            onClick={() => setCurrentView("properties")}
+                        >
+                            <IconMapPin />
+                            <span>Properties</span>
+                        </div>
+                        <div
+                            className={`nav-item ${currentView === "playbooks" ? "active" : ""}`}
+                            onClick={() => setCurrentView("playbooks")}
+                        >
+                            <IconKey />
+                            <span>Playbooks</span>
+                        </div>
+                        <div
+                            className={`nav-item ${currentView === "settings" ? "active" : ""}`}
+                            onClick={() => setCurrentView("settings")}
+                        >
+                            <IconCog />
+                            <span>Settings</span>
+                        </div>
+                    </nav>
+
+                    <div className="sidebar-footer">
+                        <div className="user-info">Agent</div>
+                        <div className="user-name">Sarah Kim</div>
+                    </div>
+                </div>
+            );
+        }
+
+        function DashboardView({ currentClient, onClientSelect }) {
+            const stats = [
+                { label: "Active Clients", value: 12 },
+                { label: "Properties Tracked", value: 34 },
+                { label: "Tasks Due", value: 8 },
+                { label: "Showings This Week", value: 5 },
+            ];
+
+            const recentActivity = [
+                { action: "Marcus & Elena scheduled showing at 2847 California St", time: "10:40 AM" },
+                { action: "AI analysis completed for new property listing", time: "10:35 AM" },
+                { action: "Sarah Chen started intake form", time: "9:15 AM" },
+                { action: "Offer accepted on 1234 Oak Street", time: "Yesterday" },
+                { action: "New property match found: 789 Portola Drive", time: "Yesterday" },
+            ];
+
+            const upcomingTasks = [
+                { task: "Confirm showing at 2847 California St", client: "Marcus & Elena", time: "Tomorrow 2:00 PM" },
+                { task: "Review disclosure for 1847 Fillmore St", client: "Michael Thompson", time: "Today 3:00 PM" },
+                { task: "Schedule consultation with new leads", client: "James & Lisa Anderson", time: "Today 4:00 PM" },
+                { task: "Submit counteroffer for 456 Cole St", client: "Jessica Martinez", time: "Tomorrow 10:00 AM" },
+            ];
+
+            return (
+                <div className="content-area">
+                    <h1>Good morning, Sarah</h1>
+                    <p className="text-secondary mb-16">Here's what's happening today</p>
+
+                    <div className="stats-grid">
+                        {stats.map((stat, idx) => (
+                            <div key={idx} className="card stat-card">
+                                <div className="stat-value">{stat.value}</div>
+                                <div className="stat-label">{stat.label}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex-between mb-16">
+                        <h2>Recent Activity</h2>
+                    </div>
+
+                    <div className="card" style={{ marginBottom: "32px" }}>
+                        {recentActivity.map((item, idx) => (
+                            <div key={idx} style={{ padding: "16px 0", borderBottom: idx < recentActivity.length - 1 ? "1px solid #E5E7EB" : "none" }}>
+                                <div className="body" style={{ marginBottom: "4px" }}>{item.action}</div>
+                                <div className="caption">{item.time}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <h2>Upcoming Tasks</h2>
+                    <div className="card">
+                        {upcomingTasks.map((item, idx) => (
+                            <div key={idx} style={{ padding: "16px 0", borderBottom: idx < upcomingTasks.length - 1 ? "1px solid #E5E7EB" : "none" }}>
+                                <div className="body-large" style={{ marginBottom: "4px", fontWeight: "500" }}>{item.task}</div>
+                                <div className="caption">{item.client} • {item.time}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function ClientsView({ clients, searchTerm, setSearchTerm, onAddClient, onClientSelect }) {
+            return (
+                <div className="content-area">
+                    <div className="flex-between mb-24">
+                        <h2>Clients</h2>
+                        <button className="button button-primary" onClick={onAddClient}>
+                            <IconPlus />
+                            Add Client
+                        </button>
+                    </div>
+
+                    <div className="search-container">
+                        <IconSearch className="search-icon" />
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search clients..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="card">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Properties</th>
+                                    <th>Last Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {clients.map(client => (
+                                    <tr key={client.id} onClick={() => onClientSelect(client)}>
+                                        <td>{client.name}</td>
+                                        <td>
+                                            <span className={`badge badge-${client.status}`}>
+                                                {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                                            </span>
+                                        </td>
+                                        <td>{client.properties}</td>
+                                        <td className="text-secondary">{client.lastActive}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        function DealWorkspaceView({ client, properties, messages, messageInput, setMessageInput, onSendMessage, expandedStages, toggleStage, completedTasks, toggleTask, onPropertyClick, onBack }) {
+            const clientProperties = properties.slice(0, 3);
+            const stageProgressMap = {
+                0: completedTasks.has(1) && completedTasks.has(2) ? "completed" : completedTasks.has(1) || completedTasks.has(2) ? "active" : "pending",
+                1: completedTasks.has(4) && completedTasks.has(5) ? "completed" : completedTasks.has(4) || completedTasks.has(5) ? "active" : "pending",
+                2: completedTasks.has(7) && completedTasks.has(8) ? "completed" : completedTasks.has(7) || completedTasks.has(8) ? "active" : "pending",
+                3: completedTasks.has(10) ? "completed" : "active",
+                4: "pending",
+                5: "pending",
+            };
+
+            return (
+                <div className="content-area">
+                    <button className="button button-text" onClick={onBack} style={{ marginBottom: "16px" }}>
+                        <IconArrowLeft />
+                        Back to Clients
+                    </button>
+
+                    <h2>{client.name}</h2>
+
+                    <div className="workspace-container">
+                        {/* Left Panel - Playbook */}
+                        <div className="workspace-panel workspace-panel-left">
+                            <div className="panel-header">Workflow Progress</div>
+                            <div className="panel-content">
+                                {[0, 1, 2, 3, 4, 5].map(stageId => {
+                                    const stageTasks = mockTasks.filter(t => t.stage === stageId);
+                                    const completedCount = stageTasks.filter(t => completedTasks.has(t.id)).length;
+                                    const progress = stageTasks.length > 0 ? completedCount / stageTasks.length : 0;
+                                    const status = stageProgressMap[stageId];
+
+                                    return (
+                                        <div key={stageId} className="stage-item">
+                                            <div
+                                                className={`stage-header ${expandedStages[stageId] ? "expanded" : ""} ${status === "active" ? "active" : ""}`}
+                                                onClick={() => toggleStage(stageId)}
+                                            >
+                                                <div className={`stage-check ${status === "completed" ? "completed" : status === "active" ? "active" : "pending"}`}>
+                                                    {status === "completed" ? "✓" : status === "active" ? "→" : stageId + 1}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div>{playBookStages[stageId].name}</div>
+                                                    <div style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
+                                                        {completedCount}/{stageTasks.length}
+                                                    </div>
+                                                </div>
+                                                <IconChevronRight style={{ transform: expandedStages[stageId] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 150ms ease-out" }} />
+                                            </div>
+
+                                            <div className={`stage-content ${expandedStages[stageId] ? "expanded" : ""}`}>
+                                                {stageTasks.map(task => (
+                                                    <div key={task.id} className="task-item" onClick={() => toggleTask(task.id)}>
+                                                        <div className={`task-checkbox ${completedTasks.has(task.id) ? "checked" : ""}`}>
+                                                            {completedTasks.has(task.id) && "✓"}
+                                                        </div>
+                                                        <span style={{ flex: 1, textDecoration: completedTasks.has(task.id) ? "line-through" : "none", color: completedTasks.has(task.id) ? "#9CA3AF" : "#111827" }}>
+                                                            {task.text}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Center Panel - Chat */}
+                        <div className="workspace-panel workspace-panel-center">
+                            <div className="panel-header">Deal Chat</div>
+                            <div className="chat-container">
+                                <div className="messages-list">
+                                    {messages.map(msg => (
+                                        <div key={msg.id} className={`message ${msg.sender}`}>
+                                            <div className={`message-avatar ${msg.sender}`}>
+                                                {msg.name.split(' ')[0][0]}
+                                            </div>
+                                            <div>
+                                                <div className="message-bubble">
+                                                    {msg.text}
+                                                </div>
+                                                <div className="message-time">{msg.time}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="chat-input-area">
+                                    <textarea
+                                        className="chat-input"
+                                        placeholder="Type a message..."
+                                        value={messageInput}
+                                        onChange={(e) => setMessageInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault();
+                                                onSendMessage();
+                                            }
+                                        }}
+                                        rows="2"
+                                    />
+                                    <div className="chat-actions">
+                                        <button className="icon-button">
+                                            <IconPaperclip />
+                                        </button>
+                                        <button className="button button-primary" onClick={onSendMessage}>
+                                            <IconSend />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Panel - Client Profile & Properties */}
+                        <div className="workspace-panel workspace-panel-right">
+                            <div className="panel-header">Client Profile</div>
+                            <div className="panel-content">
+                                <div className="profile-card">
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Email</div>
+                                        <div className="profile-value">{client.email}</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Phone</div>
+                                        <div className="profile-value">{client.phone}</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Budget</div>
+                                        <div className="profile-value">{client.budget}</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Locations</div>
+                                        <div className="profile-value">{client.locations.join(", ")}</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Criteria</div>
+                                        <div className="profile-value">{client.beds} bed, {client.baths} bath</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Pre-Approval</div>
+                                        <span className="badge badge-status-active">{client.preApproval}</span>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <div className="profile-label">Timeline</div>
+                                        <div className="profile-value">{client.timeline}</div>
+                                    </div>
+                                </div>
+
+                                <div className="panel-header" style={{ marginTop: "24px", borderTop: "1px solid #E5E7EB", paddingTop: "16px" }}>
+                                    Saved Properties
+                                </div>
+
+                                {clientProperties.map(prop => (
+                                    <div key={prop.id} className="property-card" onClick={() => onPropertyClick(prop)}>
+                                        <div className="property-address">{prop.address.split(",")[0]}</div>
+                                        <div className="property-price">${prop.price.replace("$", "").replace("M", "M")}</div>
+                                        <div className="property-details">
+                                            {prop.beds}bd • {prop.baths}ba • {prop.sqft} sqft
+                                        </div>
+                                        <span className={`property-badge badge-status-${prop.status}`}>
+                                            {prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function PropertyDetailView({ property, messages, messageInput, setMessageInput, onSendMessage, onBack }) {
+            const [isFavorite, setIsFavorite] = useState(false);
+
+            const disclosures = [
+                { title: "Roof", status: "Replaced 2018", type: "Positive" },
+                { title: "Foundation", status: "Minor settling noted", type: "Caution" },
+                { title: "Water Heater", status: "Replaced 2020", type: "Positive" },
+                { title: "Electrical", status: "Updated to 200A service", type: "Positive" },
+            ];
+
+            return (
+                <div className="content-area">
+                    <button className="button button-text" onClick={onBack} style={{ marginBottom: "16px" }}>
+                        <IconArrowLeft />
+                        Back
+                    </button>
+
+                    <div className="card" style={{ marginBottom: "24px" }}>
+                        <div className="flex-between mb-16">
+                            <div>
+                                <h2>{property.address}</h2>
+                                <div className="body-large" style={{ color: "#22C55E", fontWeight: "700", marginBottom: "8px" }}>
+                                    {property.price}
+                                </div>
+                                <div className="text-secondary">
+                                    {property.beds} bed • {property.baths} bath • {property.sqft} sqft
+                                </div>
+                            </div>
+                            <button
+                                className="icon-button"
+                                onClick={() => setIsFavorite(!isFavorite)}
+                                style={{ color: isFavorite ? "#F59E0B" : "#9CA3AF" }}
+                            >
+                                <IconStar style={{ fill: isFavorite ? "#F59E0B" : "none" }} />
+                            </button>
+                        </div>
+
+                        <div style={{
+                            width: "100%",
+                            height: "300px",
+                            backgroundColor: "#E5E7EB",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginBottom: "24px"
+                        }}>
+                            <IconHome2 />
+                        </div>
+
+                        <h3>Property Summary</h3>
+                        <div style={{
+                            padding: "16px",
+                            backgroundColor: "#F0F0F7",
+                            borderRadius: "8px",
+                            border: "1px solid #E5D4FF",
+                            borderLeft: "3px solid #6B59DE",
+                            marginBottom: "24px"
+                        }}>
+                            <p className="body">
+                                {property.beds} bed / {property.baths} bath in {property.address.split(",")[1]} Listed at ${property.price.replace("$", "")}. Built 1952. AI identified 2 potential concerns from disclosures.
+                            </p>
+                        </div>
+
+                        <h3>Disclosure Highlights</h3>
+                        <div>
+                            {disclosures.map((disc, idx) => (
+                                <div key={idx} className="card" style={{ marginBottom: "12px", cursor: "pointer" }}>
+                                    <div className="flex-between">
+                                        <div>
+                                            <div className="body-large" style={{ fontWeight: "600", marginBottom: "4px" }}>
+                                                {disc.title}
+                                            </div>
+                                            <div className="text-secondary">{disc.status}</div>
+                                        </div>
+                                        <span className={`badge ${disc.type === "Positive" ? "badge-status-active" : "badge-status-touring"}`}>
+                                            {disc.type}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
+                            <button className="button button-primary">
+                                <IconCalendar />
+                                Schedule Showing
+                            </button>
+                            <button className="button button-secondary">Request Disclosures</button>
+                        </div>
+                    </div>
+
+                    <h3>Property Discussion</h3>
+                    <div className="card">
+                        <div className="chat-container">
+                            <div className="messages-list">
+                                {messages.slice(0, 2).map(msg => (
+                                    <div key={msg.id} className={`message ${msg.sender}`}>
+                                        <div className={`message-avatar ${msg.sender}`}>
+                                            {msg.name.split(' ')[0][0]}
+                                        </div>
+                                        <div>
+                                            <div className="message-bubble">
+                                                {msg.text}
+                                            </div>
+                                            <div className="message-time">{msg.time}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="chat-input-area">
+                                <textarea
+                                    className="chat-input"
+                                    placeholder="Add notes..."
+                                    value={messageInput}
+                                    onChange={(e) => setMessageInput(e.target.value)}
+                                    rows="2"
+                                />
+                                <div className="chat-actions">
+                                    <button className="button button-primary" onClick={onSendMessage}>
+                                        <IconSend />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function PropertiesView({ properties, onPropertySelect }) {
+            const [searchTerm, setSearchTerm] = useState("");
+
+            const filteredProps = properties.filter(p =>
+                p.address.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+                <div className="content-area">
+                    <h2 style={{ marginBottom: "24px" }}>Properties</h2>
+
+                    <div className="search-container">
+                        <IconSearch className="search-icon" />
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search properties..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+                        {filteredProps.map(prop => (
+                            <div key={prop.id} className="card" onClick={() => onPropertySelect(prop)} style={{ cursor: "pointer" }}>
+                                <div style={{
+                                    width: "100%",
+                                    height: "200px",
+                                    backgroundColor: "#E5E7EB",
+                                    borderRadius: "8px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: "16px"
+                                }}>
+                                    <IconHome2 />
+                                </div>
+                                <div className="property-address">{prop.address}</div>
+                                <div className="property-price" style={{ marginBottom: "8px" }}>{prop.price}</div>
+                                <div className="property-details" style={{ marginBottom: "12px" }}>
+                                    {prop.beds}bd • {prop.baths}ba • {prop.sqft} sqft
+                                </div>
+                                <span className={`property-badge badge-status-${prop.status}`}>
+                                    {prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function PlaybooksView({ stages, tasks, expandedStages, toggleStage, completedTasks, toggleTask }) {
+            return (
+                <div className="content-area">
+                    <h2 style={{ marginBottom: "24px" }}>New Buyer Workflow Playbook</h2>
+
+                    <div className="card">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", flexWrap: "wrap" }}>
+                            {stages.map((stage, idx) => (
+                                <React.Fragment key={stage.id}>
+                                    <div style={{ textAlign: "center", flex: "0 1 auto" }}>
+                                        <div style={{
+                                            width: "40px",
+                                            height: "40px",
+                                            borderRadius: "50%",
+                                            backgroundColor: "#EFF6FF",
+                                            color: "#2563EB",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontWeight: "600",
+                                            margin: "0 auto 8px"
+                                        }}>
+                                            {idx + 1}
+                                        </div>
+                                        <div style={{ fontSize: "12px", fontWeight: "600", color: "#111827" }}>
+                                            {stage.name}
+                                        </div>
+                                    </div>
+                                    {idx < stages.length - 1 && (
+                                        <div style={{
+                                            height: "2px",
+                                            backgroundColor: "#E5E7EB",
+                                            flex: "1 1 auto",
+                                            minWidth: "20px",
+                                            margin: "20px 0"
+                                        }} />
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </div>
+
+                        {stages.map(stage => {
+                            const stageTasks = tasks.filter(t => t.stage === stage.id);
+                            return (
+                                <div key={stage.id} className="stage-item">
+                                    <div
+                                        className={`stage-header ${expandedStages[stage.id] ? "active" : ""}`}
+                                        onClick={() => toggleStage(stage.id)}
+                                    >
+                                        <div style={{ fontWeight: "600", flex: 1 }}>
+                                            {stage.name}
+                                        </div>
+                                        <div style={{ fontSize: "12px", color: "#9CA3AF" }}>
+                                            {stageTasks.length} tasks
+                                        </div>
+                                        <IconChevronRight style={{ transform: expandedStages[stage.id] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 150ms ease-out" }} />
+                                    </div>
+
+                                    <div className={`stage-content ${expandedStages[stage.id] ? "expanded" : ""}`}>
+                                        {stageTasks.map(task => (
+                                            <div key={task.id} className="task-item" onClick={() => toggleTask(task.id)}>
+                                                <div className={`task-checkbox ${completedTasks.has(task.id) ? "checked" : ""}`}>
+                                                    {completedTasks.has(task.id) && "✓"}
+                                                </div>
+                                                <span style={{ flex: 1, textDecoration: completedTasks.has(task.id) ? "line-through" : "none", color: completedTasks.has(task.id) ? "#9CA3AF" : "#111827" }}>
+                                                    {task.text}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        function SettingsView() {
+            return (
+                <div className="content-area">
+                    <h2 style={{ marginBottom: "24px" }}>Settings</h2>
+
+                    <div className="card">
+                        <div style={{ padding: "24px" }}>
+                            <h3>Account Settings</h3>
+                            <div style={{ marginTop: "16px" }}>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div className="form-label">Name</div>
+                                    <input type="text" className="input-field" value="Sarah Kim" readOnly style={{ width: "100%", maxWidth: "300px" }} />
+                                </div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div className="form-label">Email</div>
+                                    <input type="text" className="input-field" value="sarah@askalvin.com" readOnly style={{ width: "100%", maxWidth: "300px" }} />
+                                </div>
+                                <div>
+                                    <div className="form-label">Team</div>
+                                    <select className="input-field" style={{ width: "100%", maxWidth: "300px" }}>
+                                        <option>San Francisco Office</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="card" style={{ marginTop: "24px" }}>
+                        <div style={{ padding: "24px" }}>
+                            <h3>Preferences</h3>
+                            <div style={{ marginTop: "16px" }}>
+                                <label className="checkbox-item">
+                                    <input type="checkbox" className="checkbox-input" defaultChecked />
+                                    <span className="checkbox-label">Email notifications on new showings</span>
+                                </label>
+                                <label className="checkbox-item" style={{ marginTop: "12px" }}>
+                                    <input type="checkbox" className="checkbox-input" defaultChecked />
+                                    <span className="checkbox-label">Daily digest of tasks and activity</span>
+                                </label>
+                                <label className="checkbox-item" style={{ marginTop: "12px" }}>
+                                    <input type="checkbox" className="checkbox-input" />
+                                    <span className="checkbox-label">Slack integration</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ClientIntakeForm({ onClose }) {
+            const [step, setStep] = useState(1);
+            const [formData, setFormData] = useState({
+                name: "",
+                email: "",
+                phone: "",
+                budget: 1000000,
+                locations: [],
+                beds: 3,
+                baths: 2,
+                timeline: "30",
+                preApproval: false,
+            });
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: value
+                }));
+            };
+
+            const handleLocationToggle = (location) => {
+                setFormData(prev => ({
+                    ...prev,
+                    locations: prev.locations.includes(location)
+                        ? prev.locations.filter(l => l !== location)
+                        : [...prev.locations, location]
+                }));
+            };
+
+            const budgetOptions = [
+                { value: 600000, label: "$600K - $800K" },
+                { value: 800000, label: "$800K - $1M" },
+                { value: 1000000, label: "$1M - $1.2M" },
+                { value: 1200000, label: "$1.2M - $1.5M" },
+                { value: 1500000, label: "$1.5M+" },
+            ];
+
+            const locationOptions = ["Pacific Heights", "Marina", "SOMA", "Mission", "Hayes Valley", "Sunset District"];
+
+            const progress = (step / 3) * 100;
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <div className="progress-bar">
+                                <div className="progress-fill" style={{ width: `${progress}%` }} />
+                            </div>
+                            <h2>Add New Client</h2>
+                            <p className="text-secondary">Step {step} of 3</p>
+                        </div>
+
+                        {step === 1 && (
+                            <div>
+                                <div className="form-group">
+                                    <label className="form-label">Full Name</label>
+                                    <input
+                                        type="text"
+                                        className="input-field form-control"
+                                        placeholder="Enter client name"
+                                        value={formData.name}
+                                        onChange={(e) => handleInputChange("name", e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        className="input-field form-control"
+                                        placeholder="client@example.com"
+                                        value={formData.email}
+                                        onChange={(e) => handleInputChange("email", e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Phone</label>
+                                    <input
+                                        type="tel"
+                                        className="input-field form-control"
+                                        placeholder="(555) 123-4567"
+                                        value={formData.phone}
+                                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div>
+                                <div className="form-group">
+                                    <label className="form-label">Budget Range</label>
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <select className="input-field form-control" value={formData.budget} onChange={(e) => handleInputChange("budget", parseInt(e.target.value))}>
+                                            {budgetOptions.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Preferred Locations</label>
+                                    <div className="checkbox-group">
+                                        {locationOptions.map(loc => (
+                                            <label key={loc} className="checkbox-item">
+                                                <input
+                                                    type="checkbox"
+                                                    className="checkbox-input"
+                                                    checked={formData.locations.includes(loc)}
+                                                    onChange={() => handleLocationToggle(loc)}
+                                                />
+                                                <span className="checkbox-label">{loc}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Bedrooms</label>
+                                    <select className="input-field form-control" value={formData.beds} onChange={(e) => handleInputChange("beds", parseInt(e.target.value))}>
+                                        <option value="1">1 Bedroom</option>
+                                        <option value="2">2 Bedrooms</option>
+                                        <option value="3">3 Bedrooms</option>
+                                        <option value="4">4+ Bedrooms</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Bathrooms</label>
+                                    <select className="input-field form-control" value={formData.baths} onChange={(e) => handleInputChange("baths", parseInt(e.target.value))}>
+                                        <option value="1">1 Bathroom</option>
+                                        <option value="2">2 Bathrooms</option>
+                                        <option value="3">3 Bathrooms</option>
+                                        <option value="4">4+ Bathrooms</option>
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div>
+                                <div className="form-group">
+                                    <label className="form-label">Timeline</label>
+                                    <select className="input-field form-control" value={formData.timeline} onChange={(e) => handleInputChange("timeline", e.target.value)}>
+                                        <option value="14">2 weeks</option>
+                                        <option value="30">1 month</option>
+                                        <option value="45">6 weeks</option>
+                                        <option value="60">2-3 months</option>
+                                        <option value="90">3+ months</option>
+                                    </select>
+                                </div>
+
+                                <label className="checkbox-item">
+                                    <input
+                                        type="checkbox"
+                                        className="checkbox-input"
+                                        checked={formData.preApproval}
+                                        onChange={(e) => handleInputChange("preApproval", e.target.checked)}
+                                    />
+                                    <span className="checkbox-label">Pre-approval letter obtained</span>
+                                </label>
+
+                                <div style={{ marginTop: "24px", padding: "16px", backgroundColor: "#EFF6FF", borderRadius: "8px", border: "1px solid #BFDBFE" }}>
+                                    <div className="body-large" style={{ fontWeight: "600", color: "#1E40AF", marginBottom: "8px" }}>
+                                        Review Client Info
+                                    </div>
+                                    <div className="body text-secondary">
+                                        {formData.name && <div>Name: {formData.name}</div>}
+                                        {formData.email && <div>Email: {formData.email}</div>}
+                                        {formData.phone && <div>Phone: {formData.phone}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div style={{ marginTop: "32px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                            <button className="button button-secondary" onClick={onClose}>
+                                Cancel
+                            </button>
+
+                            {step > 1 && (
+                                <button className="button button-secondary" onClick={() => setStep(step - 1)}>
+                                    Back
+                                </button>
+                            )}
+
+                            {step < 3 ? (
+                                <button className="button button-primary" onClick={() => setStep(step + 1)}>
+                                    Continue
+                                </button>
+                            ) : (
+                                <button
+                                    className="button button-primary"
+                                    onClick={() => {
+                                        onClose();
+                                        alert(`Client "${formData.name}" has been added!`);
+                                    }}
+                                >
+                                    Complete Setup
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
